@@ -1,5 +1,10 @@
 import {
   Comment,
+  KnowledgeArticle,
+  KnowledgeArticleDetail,
+  KnowledgeCategory,
+  KnowledgeCategoryDetail,
+  KnowledgeSearchResult,
   PageResult,
   Part,
   PartCategory,
@@ -211,4 +216,24 @@ export function createReport(payload: {
 
 export function listMyReports(params: { page?: number; pageSize?: number }) {
   return request<PageResult<Report>>({ path: `/reports/my${toQuery(params)}` });
+}
+
+export function listKnowledgeCategories(params: { parentId?: number; q?: string } = {}) {
+  return request<KnowledgeCategory[]>({ path: `/knowledge/categories${toQuery(params)}` });
+}
+
+export function getKnowledgeCategory(categoryId: number) {
+  return request<KnowledgeCategoryDetail>({ path: `/knowledge/categories/${categoryId}` });
+}
+
+export function listKnowledgeArticles(params: { page?: number; pageSize?: number; categoryId?: number; q?: string }) {
+  return request<PageResult<KnowledgeArticle>>({ path: `/knowledge/articles${toQuery(params)}` });
+}
+
+export function getKnowledgeArticle(articleId: number) {
+  return request<KnowledgeArticleDetail>({ path: `/knowledge/articles/${articleId}` });
+}
+
+export function searchKnowledge(q: string) {
+  return request<KnowledgeSearchResult>({ path: `/knowledge/search${toQuery({ q })}` });
 }

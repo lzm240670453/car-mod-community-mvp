@@ -47,6 +47,7 @@ func registerAPIRoutes(api *gin.RouterGroup, deps handler.Deps) {
 	vehicles := handler.NewVehicleHandler(deps)
 	posts := handler.NewPostHandler(deps)
 	parts := handler.NewPartHandler(deps)
+	knowledge := handler.NewKnowledgeHandler(deps)
 	intents := handler.NewIntentHandler(deps)
 	messages := handler.NewMessageHandler(deps)
 	reports := handler.NewReportHandler(deps)
@@ -91,6 +92,12 @@ func registerAPIRoutes(api *gin.RouterGroup, deps handler.Deps) {
 	api.POST("/parts/:partId/favorite", parts.Favorite)
 	api.DELETE("/parts/:partId/favorite", parts.Unfavorite)
 	api.GET("/part-categories", parts.ListCategories)
+
+	api.GET("/knowledge/categories", knowledge.ListCategories)
+	api.GET("/knowledge/categories/:categoryId", knowledge.GetCategory)
+	api.GET("/knowledge/articles", knowledge.ListArticles)
+	api.GET("/knowledge/articles/:articleId", knowledge.GetArticle)
+	api.GET("/knowledge/search", knowledge.Search)
 
 	api.POST("/parts/:partId/intents", intents.Create)
 	api.GET("/intents", intents.List)

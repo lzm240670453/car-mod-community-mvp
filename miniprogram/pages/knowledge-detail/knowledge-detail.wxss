@@ -1,0 +1,85 @@
+.knowledge-detail-page {
+  padding-top: 24rpx;
+}
+
+.detail-hero {
+  padding: 30rpx;
+}
+
+.detail-title {
+  margin-top: 8rpx;
+}
+
+.detail-summary {
+  margin-top: 16rpx;
+  color: #555555;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 18rpx;
+  color: #777777;
+  font-size: 24rpx;
+}
+
+.tag-row,
+.category-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44rpx;
+  padding: 0 16rpx;
+  border-radius: 10rpx;
+  background: rgba(139, 111, 71, 0.08);
+  color: #8b6f47;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.content-panel {
+  padding: 28rpx;
+}
+
+.content-line {
+  margin-top: 18rpx;
+  color: #333333;
+  font-size: 29rpx;
+  line-height: 1.78;
+}
+
+.content-line:first-of-type {
+  margin-top: 0;
+}
+
+.brand-panel {
+  padding: 28rpx;
+}
+
+.brand-level {
+  color: #8b6f47;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.brand-meta {
+  margin-top: 10rpx;
+  color: #777777;
+  font-size: 24rpx;
+}
+
+.brand-text {
+  margin-top: 14rpx;
+  color: #333333;
+  font-size: 27rpx;
+  line-height: 1.6;
+}

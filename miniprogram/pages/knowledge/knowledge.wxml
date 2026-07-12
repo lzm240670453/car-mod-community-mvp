@@ -1,0 +1,66 @@
+<view class="page knowledge-page">
+  <view class="knowledge-hero panel">
+    <view class="eyebrow">Knowledge Base</view>
+    <view class="title knowledge-title">{{title}}</view>
+    <view class="hero-desc">{{description}}</view>
+    <view class="search-box knowledge-search" hover-class="input-hover">
+      <image class="hi-icon small" src="/assets/icons/search-gray.svg" mode="aspectFit" bindtap="onSearchConfirm" />
+      <input class="search-input" value="{{q}}" placeholder="搜索分类、品牌或关键词" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearchConfirm" />
+      <view wx:if="{{isSearch}}" class="clear-search pressable" hover-class="pressable-hover" bindtap="clearSearch">清除</view>
+    </view>
+  </view>
+
+  <scroll-view wx:if="{{categoryId > 0 && !isSearch}}" scroll-x class="breadcrumb-scroll">
+    <view class="breadcrumb-row">
+      <view class="breadcrumb-item pressable" hover-class="pressable-hover" bindtap="goRoot">知识库</view>
+      <view wx:for="{{breadcrumb}}" wx:key="id" class="breadcrumb-node">
+        <text class="breadcrumb-sep">/</text>
+        <view class="breadcrumb-item pressable {{index === breadcrumb.length - 1 ? 'current' : ''}}" data-id="{{item.id}}" hover-class="pressable-hover" bindtap="goBreadcrumb">{{item.name}}</view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="section">
+    <view class="between section-head">
+      <view class="section-title">{{isSearch ? '相关分类' : '下级分类'}}</view>
+      <view class="caption">{{categories.length}} 项</view>
+    </view>
+    <view class="category-grid">
+      <view wx:for="{{categories}}" wx:key="id" class="category-card pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openCategory">
+        <view class="category-icon">
+          <image class="hi-icon" src="{{item.iconSrc}}" mode="aspectFit" />
+        </view>
+        <view class="category-main">
+          <view class="category-name">{{item.name}}</view>
+          <view class="category-desc">{{item.description}}</view>
+          <view class="category-count">{{item.countText}}</view>
+        </view>
+        <image class="hi-icon mini" src="/assets/icons/chevronRight-gray.svg" mode="aspectFit" />
+      </view>
+    </view>
+    <view wx:if="{{!loading && categories.length === 0}}" class="empty small-empty">暂无下级分类</view>
+  </view>
+
+  <view class="section">
+    <view class="between section-head">
+      <view class="section-title">{{isSearch ? '相关文章' : '内容'}}</view>
+      <view class="caption">{{articles.length}} 篇</view>
+    </view>
+    <view class="list article-list">
+      <view wx:for="{{articles}}" wx:key="id" class="card article-card pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openArticle">
+        <view class="article-top">
+          <view class="post-type-badge">知识</view>
+          <view class="article-stats">{{item.viewCount}} 次浏览</view>
+        </view>
+        <view class="card-title article-title">{{item.title}}</view>
+        <view class="card-text article-summary">{{item.summary}}</view>
+        <view class="tag-row">
+          <view wx:for="{{item.tags}}" wx:key="*this" class="tag">{{item}}</view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{!loading && articles.length === 0}}" class="empty small-empty">暂无内容，先浏览下级分类</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty">加载中...</view>
+</view>

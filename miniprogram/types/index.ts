@@ -184,3 +184,59 @@ export interface Report extends Timestamp {
   reasonText: string;
   status: number;
 }
+
+export interface KnowledgeCategory extends Timestamp {
+  id: number;
+  parentId?: number;
+  name: string;
+  slug: string;
+  description: string;
+  icon: string;
+  sortOrder: number;
+  hasContent: number;
+  childCount?: number;
+  articleCount?: number;
+}
+
+export interface KnowledgeArticle extends Timestamp {
+  id: number;
+  title: string;
+  summary: string;
+  content?: string;
+  tags: string[];
+  images: string[];
+  videoUrl: string;
+  brandId?: number;
+  priceRange: string;
+  viewCount: number;
+  likeCount: number;
+  sortOrder: number;
+  publishedAt?: string;
+}
+
+export interface KnowledgeBrand extends Timestamp {
+  id: number;
+  name: string;
+  country: string;
+  story: string;
+  products: string;
+  priceLevel: string;
+  officialUrl: string;
+  sortOrder: number;
+}
+
+export interface KnowledgeCategoryDetail extends KnowledgeCategory {
+  breadcrumb: KnowledgeCategory[];
+  children: KnowledgeCategory[];
+  articles: KnowledgeArticle[];
+}
+
+export interface KnowledgeArticleDetail extends KnowledgeArticle {
+  categories: KnowledgeCategory[];
+  brand?: KnowledgeBrand;
+}
+
+export interface KnowledgeSearchResult {
+  categories: KnowledgeCategory[];
+  articles: KnowledgeArticle[];
+}

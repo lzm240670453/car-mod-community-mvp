@@ -1,0 +1,39 @@
+<view class="page knowledge-detail-page">
+  <view wx:if="{{detail}}" class="section panel detail-hero">
+    <view class="eyebrow">Knowledge</view>
+    <view class="title detail-title">{{detail.title}}</view>
+    <view class="detail-summary">{{detail.summary}}</view>
+    <view class="detail-meta">
+      <text>{{detail.viewCount}} 次浏览</text>
+      <text wx:if="{{detail.priceRange}}">{{detail.priceRange}}</text>
+      <text wx:if="{{detail.brand}}">{{detail.brand.name}}</text>
+    </view>
+    <view class="tag-row">
+      <view wx:for="{{detail.tags}}" wx:key="*this" class="tag">{{item}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{detail}}" class="section panel content-panel">
+    <view class="section-title">内容</view>
+    <view wx:for="{{contentLines}}" wx:key="*this" class="content-line">{{item}}</view>
+  </view>
+
+  <view wx:if="{{detail && detail.brand}}" class="section panel brand-panel">
+    <view class="between">
+      <view class="sub-title">{{detail.brand.name}}</view>
+      <view class="brand-level">{{detail.brand.priceLevel}}</view>
+    </view>
+    <view class="brand-meta">{{detail.brand.country}}</view>
+    <view class="brand-text">{{detail.brand.story}}</view>
+    <view class="brand-text">{{detail.brand.products}}</view>
+  </view>
+
+  <view wx:if="{{detail && detail.categories.length > 0}}" class="section panel">
+    <view class="section-title">相关分类</view>
+    <view class="category-row">
+      <view wx:for="{{detail.categories}}" wx:key="id" class="chip pressable" data-id="{{item.id}}" hover-class="chip-hover" bindtap="openCategory">{{item.name}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty">加载中...</view>
+</view>

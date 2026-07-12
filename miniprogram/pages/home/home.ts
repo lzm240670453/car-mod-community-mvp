@@ -1,7 +1,7 @@
-import { favoritePost, getUnreadMessageCount, likePost, listPosts } from "../../api/index";
+import { favoritePost, getUnreadMessageCount, likePost, listKnowledgeArticles, listKnowledgeCategories, listPosts } from "../../api/index";
 import { formatDate, postTypeText, POST_TYPES, statusText } from "../../utils/labels";
 import { getCurrentUserId, toastError } from "../../utils/request";
-import { Post } from "../../types/index";
+import { KnowledgeArticle, KnowledgeCategory, Post } from "../../types/index";
 
 interface PostItem extends Post {
   typeText: string;
@@ -9,8 +9,40 @@ interface PostItem extends Post {
   createdAtText: string;
 }
 
+interface KnowledgeCategoryItem extends KnowledgeCategory {
+  iconSrc: string;
+  countText: string;
+}
+
+const ICONS = ["wrench", "car", "chart", "shield", "star", "setting", "user", "search", "comment", "filter", "edit", "report", "eye", "camera", "notification"];
+
+function iconSrc(icon: string): string {
+  const safeIcon = ICONS.includes(icon) ? icon : "wrench";
+  return `/assets/icons/${safeIcon}-brown.svg`;
+}
+
+function mapKnowledgeCategory(item: KnowledgeCategory): KnowledgeCategoryItem {
+  const childCount = item.childCount || 0;
+  const articleCount = item.articleCount || 0;
+  const countText = childCount > 0 ? `${childCount} 子类` : articleCount > 0 ? `${articleCount} 内容` : "待补充";
+  return {
+    ...item,
+    iconSrc: iconSrc(item.icon),
+    countText
+  };
+}
+
 Page({
   data: {
+    activeSection: "knowledge",
+    homeSections: [
+      { label: "知识库", value: "knowledge", summary: "无限分类查改装知识" },
+      { label: "社区", value: "community", summary: "案例、求助与车友交流" }
+    ],
+    knowledgeQ: "",
+    knowledgeCategories: [] as KnowledgeCategoryItem[],
+    knowledgeArticles: [] as KnowledgeArticle[],
+    knowledgeLoading: false,
     q: "",
     type: 0,
     postTypes: [{ label: "全部", value: 0 }, ...POST_TYPES],
@@ -24,6 +56,7 @@ Page({
   },
 
   onLoad() {
+    this.loadKnowledgeHome();
     this.loadPosts(true);
   },
 
@@ -32,13 +65,51 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.loadPosts(true).finally(() => wx.stopPullDownRefresh());
+    const task = this.data.activeSection === "knowledge" ? this.loadKnowledgeHome() : this.loadPosts(true);
+    task.finally(() => wx.stopPullDownRefresh());
   },
 
   onReachBottom() {
-    if (this.data.hasMore && !this.data.loading) {
+    if (this.data.activeSection === "community" && this.data.hasMore && !this.data.loading) {
       this.loadPosts(false);
     }
+  },
+
+  selectHomeSection(event: WechatMiniprogram.TouchEvent) {
+    const activeSection = String(event.currentTarget.dataset.section || "knowledge");
+    this.setData({ activeSection });
+    if (activeSection === "knowledge" && this.data.knowledgeCategories.length === 0) {
+      this.loadKnowledgeHome();
+    } else if (activeSection === "community" && this.data.items.length === 0) {
+      this.loadPosts(true);
+    }
+  },
+
+  onKnowledgeSearchInput(event: WechatMiniprogram.Input) {
+    this.setData({ knowledgeQ: String(event.detail.value || "") });
+  },
+
+  onKnowledgeSearchConfirm() {
+    const q = this.data.knowledgeQ.trim();
+    if (q) {
+      wx.navigateTo({ url: `/pages/knowledge/knowledge?q=${encodeURIComponent(q)}` });
+    } else {
+      this.openKnowledgeRoot();
+    }
+  },
+
+  openKnowledgeRoot() {
+    wx.navigateTo({ url: "/pages/knowledge/knowledge" });
+  },
+
+  openKnowledgeCategory(event: WechatMiniprogram.TouchEvent) {
+    const id = Number(event.currentTarget.dataset.id);
+    wx.navigateTo({ url: `/pages/knowledge/knowledge?categoryId=${id}` });
+  },
+
+  openKnowledgeArticle(event: WechatMiniprogram.TouchEvent) {
+    const id = Number(event.currentTarget.dataset.id);
+    wx.navigateTo({ url: `/pages/knowledge-detail/knowledge-detail?id=${id}` });
   },
 
   onSearchInput(event: WechatMiniprogram.Input) {
@@ -50,16 +121,15 @@ Page({
   },
 
   onHeaderSearch() {
+    if (this.data.activeSection === "knowledge") {
+      this.onKnowledgeSearchConfirm();
+      return;
+    }
     this.loadPosts(true);
   },
 
   showNotifications() {
     wx.switchTab({ url: "/pages/messages/messages" });
-  },
-
-  selectFeedTab(event: WechatMiniprogram.TouchEvent) {
-    const feedTab = String(event.currentTarget.dataset.tab || "recommend");
-    this.setData({ feedTab });
   },
 
   selectType(event: WechatMiniprogram.TouchEvent) {
@@ -118,6 +188,27 @@ Page({
         }
       }
     });
+  },
+
+  async loadKnowledgeHome() {
+    if (this.data.knowledgeLoading) {
+      return;
+    }
+    this.setData({ knowledgeLoading: true });
+    try {
+      const [categories, articleResult] = await Promise.all([
+        listKnowledgeCategories(),
+        listKnowledgeArticles({ page: 1, pageSize: 3 })
+      ]);
+      this.setData({
+        knowledgeCategories: categories.map(mapKnowledgeCategory),
+        knowledgeArticles: articleResult.items
+      });
+    } catch (error) {
+      toastError(error);
+    } finally {
+      this.setData({ knowledgeLoading: false });
+    }
   },
 
   async loadPosts(reset: boolean) {

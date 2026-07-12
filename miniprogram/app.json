@@ -1,6 +1,8 @@
 {
   "pages": [
     "pages/home/home",
+    "pages/knowledge/knowledge",
+    "pages/knowledge-detail/knowledge-detail",
     "pages/parts/parts",
     "pages/publish/publish",
     "pages/messages/messages",

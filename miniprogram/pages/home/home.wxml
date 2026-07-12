@@ -14,60 +14,114 @@
     </view>
   </view>
 
-  <view class="section">
-    <scroll-view scroll-x class="filter-scroll">
-      <view class="filter-row">
-        <view wx:for="{{postTypes}}" wx:key="value" class="chip pressable {{type === item.value ? 'active' : ''}}" data-type="{{item.value}}" hover-class="chip-hover" bindtap="selectType">
-          {{item.label}}
-        </view>
-      </view>
-    </scroll-view>
-    <view class="search-box home-search" hover-class="input-hover">
-      <image class="hi-icon small" src="/assets/icons/search-gray.svg" mode="aspectFit" bindtap="onHeaderSearch" />
-      <input class="search-input" value="{{q}}" placeholder="搜索改装案例、问题或车友心得" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearchConfirm" />
+  <view class="module-switch">
+    <view wx:for="{{homeSections}}" wx:key="value" class="module-tab pressable {{activeSection === item.value ? 'active' : ''}}" data-section="{{item.value}}" hover-class="pressable-hover" bindtap="selectHomeSection">
+      <view class="module-label">{{item.label}}</view>
+      <view class="module-summary">{{item.summary}}</view>
     </view>
   </view>
 
-  <view class="list post-list">
-    <view wx:for="{{items}}" wx:key="id" class="card post-card pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openPost">
-      <view class="post-head">
-        <view class="row author">
-          <view class="avatar"></view>
-          <view class="stack">
-            <view class="author-name">车友 {{item.userId}}</view>
-            <view class="garage-tag">改装记录 · {{item.createdAtText}}</view>
+  <view wx:if="{{activeSection === 'knowledge'}}" class="knowledge-section">
+    <view class="section panel knowledge-intro">
+      <view class="eyebrow">Knowledge Base</view>
+      <view class="search-box home-search" hover-class="input-hover">
+        <image class="hi-icon small" src="/assets/icons/search-gray.svg" mode="aspectFit" bindtap="onKnowledgeSearchConfirm" />
+        <input class="search-input" value="{{knowledgeQ}}" placeholder="搜索分类、品牌或关键词" bindinput="onKnowledgeSearchInput" confirm-type="search" bindconfirm="onKnowledgeSearchConfirm" />
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="between section-head">
+        <view class="section-title">一级分类</view>
+        <view class="section-link pressable" hover-class="pressable-hover" bindtap="openKnowledgeRoot">全部</view>
+      </view>
+      <view class="knowledge-grid">
+        <view wx:for="{{knowledgeCategories}}" wx:key="id" class="knowledge-tile pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openKnowledgeCategory">
+          <view class="tile-icon">
+            <image class="hi-icon small" src="{{item.iconSrc}}" mode="aspectFit" />
+          </view>
+          <view class="tile-name">{{item.name}}</view>
+          <view class="tile-count">{{item.countText}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="between section-head">
+        <view class="section-title">首发内容</view>
+        <view class="caption">按大纲优先补齐</view>
+      </view>
+      <view class="list">
+        <view wx:for="{{knowledgeArticles}}" wx:key="id" class="card knowledge-article pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openKnowledgeArticle">
+          <view class="article-kicker">知识库</view>
+          <view class="card-title">{{item.title}}</view>
+          <view class="card-text article-summary">{{item.summary}}</view>
+          <view class="tag-row">
+            <view wx:for="{{item.tags}}" wx:key="*this" class="tag">{{item}}</view>
           </view>
         </view>
-        <view class="post-type-badge">{{item.typeText}}</view>
       </view>
-      <view class="card-title post-title">{{item.title}}</view>
-      <view class="post-media">
-        <view class="media-tile image-placeholder"></view>
-        <view class="media-tile image-placeholder accent"></view>
-        <view class="media-tile image-placeholder dark"></view>
-      </view>
-      <view class="card-text post-content">{{item.content}}</view>
-      <view class="post-actions">
-        <view class="action-link pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="likePostInList">
-          <image class="hi-icon small" src="/assets/icons/thumbsUp-gray.svg" mode="aspectFit" />
-          <text>{{item.likeCount}}</text>
-        </view>
-        <view class="action-link pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="openComments">
-          <image class="hi-icon small" src="/assets/icons/comment-gray.svg" mode="aspectFit" />
-          <text>{{item.commentCount}}</text>
-        </view>
-        <view class="action-link pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="favoritePostInList">
-          <image class="hi-icon small" src="/assets/icons/star-gray.svg" mode="aspectFit" />
-          <text>收藏 {{item.favoriteCount}}</text>
-        </view>
-        <view class="action-link more-action pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="showPostActions">
-          <image class="hi-icon small" src="/assets/icons/more-gray.svg" mode="aspectFit" />
-        </view>
-      </view>
+      <view wx:if="{{!knowledgeLoading && knowledgeArticles.length === 0}}" class="empty">暂无知识内容</view>
+      <view wx:if="{{knowledgeLoading}}" class="empty">加载中...</view>
     </view>
   </view>
 
-  <view wx:if="{{!loading && items.length === 0}}" class="empty">暂无帖子，去发布第一篇改装日记</view>
-  <view wx:if="{{loading}}" class="empty">加载中...</view>
-  <view wx:if="{{!hasMore && items.length > 0}}" class="empty">没有更多了</view>
+  <view wx:if="{{activeSection === 'community'}}" class="community-section">
+    <view class="section">
+      <scroll-view scroll-x class="filter-scroll">
+        <view class="filter-row">
+          <view wx:for="{{postTypes}}" wx:key="value" class="chip pressable {{type === item.value ? 'active' : ''}}" data-type="{{item.value}}" hover-class="chip-hover" bindtap="selectType">
+            {{item.label}}
+          </view>
+        </view>
+      </scroll-view>
+      <view class="search-box home-search" hover-class="input-hover">
+        <image class="hi-icon small" src="/assets/icons/search-gray.svg" mode="aspectFit" bindtap="onHeaderSearch" />
+        <input class="search-input" value="{{q}}" placeholder="搜索改装案例、问题或车友心得" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearchConfirm" />
+      </view>
+    </view>
+
+    <view class="list post-list">
+      <view wx:for="{{items}}" wx:key="id" class="card post-card pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openPost">
+        <view class="post-head">
+          <view class="row author">
+            <view class="avatar"></view>
+            <view class="stack">
+              <view class="author-name">车友 {{item.userId}}</view>
+              <view class="garage-tag">改装记录 · {{item.createdAtText}}</view>
+            </view>
+          </view>
+          <view class="post-type-badge">{{item.typeText}}</view>
+        </view>
+        <view class="card-title post-title">{{item.title}}</view>
+        <view class="post-media">
+          <view class="media-tile image-placeholder"></view>
+          <view class="media-tile image-placeholder accent"></view>
+          <view class="media-tile image-placeholder dark"></view>
+        </view>
+        <view class="card-text post-content">{{item.content}}</view>
+        <view class="post-actions">
+          <view class="action-link pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="likePostInList">
+            <image class="hi-icon small" src="/assets/icons/thumbsUp-gray.svg" mode="aspectFit" />
+            <text>{{item.likeCount}}</text>
+          </view>
+          <view class="action-link pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="openComments">
+            <image class="hi-icon small" src="/assets/icons/comment-gray.svg" mode="aspectFit" />
+            <text>{{item.commentCount}}</text>
+          </view>
+          <view class="action-link pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="favoritePostInList">
+            <image class="hi-icon small" src="/assets/icons/star-gray.svg" mode="aspectFit" />
+            <text>收藏 {{item.favoriteCount}}</text>
+          </view>
+          <view class="action-link more-action pressable" data-id="{{item.id}}" hover-class="pressable-hover" catchtap="showPostActions">
+            <image class="hi-icon small" src="/assets/icons/more-gray.svg" mode="aspectFit" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{!loading && items.length === 0}}" class="empty">暂无帖子，去发布第一篇改装日记</view>
+    <view wx:if="{{loading}}" class="empty">加载中...</view>
+    <view wx:if="{{!hasMore && items.length > 0}}" class="empty">没有更多了</view>
+  </view>
 </view>

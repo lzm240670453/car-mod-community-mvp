@@ -31,6 +31,11 @@ exports.markMessageRead = markMessageRead;
 exports.markAllMessagesRead = markAllMessagesRead;
 exports.createReport = createReport;
 exports.listMyReports = listMyReports;
+exports.listKnowledgeCategories = listKnowledgeCategories;
+exports.getKnowledgeCategory = getKnowledgeCategory;
+exports.listKnowledgeArticles = listKnowledgeArticles;
+exports.getKnowledgeArticle = getKnowledgeArticle;
+exports.searchKnowledge = searchKnowledge;
 const request_1 = require("../utils/request");
 function wechatLogin(payload) {
     return (0, request_1.request)({
@@ -136,4 +141,19 @@ function createReport(payload) {
 }
 function listMyReports(params) {
     return (0, request_1.request)({ path: `/reports/my${(0, request_1.toQuery)(params)}` });
+}
+function listKnowledgeCategories(params = {}) {
+    return (0, request_1.request)({ path: `/knowledge/categories${(0, request_1.toQuery)(params)}` });
+}
+function getKnowledgeCategory(categoryId) {
+    return (0, request_1.request)({ path: `/knowledge/categories/${categoryId}` });
+}
+function listKnowledgeArticles(params) {
+    return (0, request_1.request)({ path: `/knowledge/articles${(0, request_1.toQuery)(params)}` });
+}
+function getKnowledgeArticle(articleId) {
+    return (0, request_1.request)({ path: `/knowledge/articles/${articleId}` });
+}
+function searchKnowledge(q) {
+    return (0, request_1.request)({ path: `/knowledge/search${(0, request_1.toQuery)({ q })}` });
 }

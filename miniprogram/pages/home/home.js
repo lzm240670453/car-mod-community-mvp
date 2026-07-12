@@ -3,8 +3,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../../api/index");
 const labels_1 = require("../../utils/labels");
 const request_1 = require("../../utils/request");
+const ICONS = ["wrench", "car", "chart", "shield", "star", "setting", "user", "search", "comment", "filter", "edit", "report", "eye", "camera", "notification"];
+function iconSrc(icon) {
+    const safeIcon = ICONS.includes(icon) ? icon : "wrench";
+    return `/assets/icons/${safeIcon}-brown.svg`;
+}
+function mapKnowledgeCategory(item) {
+    const childCount = item.childCount || 0;
+    const articleCount = item.articleCount || 0;
+    const countText = childCount > 0 ? `${childCount} 子类` : articleCount > 0 ? `${articleCount} 内容` : "待补充";
+    return {
+        ...item,
+        iconSrc: iconSrc(item.icon),
+        countText
+    };
+}
 Page({
     data: {
+        activeSection: "knowledge",
+        homeSections: [
+            { label: "改哪里", value: "knowledge", summary: "改装知识我知道" },
+            { label: "社区", value: "community", summary: "案例、求助与车友交流" }
+        ],
+        knowledgeQ: "",
+        knowledgeCategories: [],
+        knowledgeArticles: [],
+        knowledgeLoading: false,
         q: "",
         type: 0,
         postTypes: [{ label: "全部", value: 0 }, ...labels_1.POST_TYPES],
@@ -17,18 +41,53 @@ Page({
         unreadCount: 0
     },
     onLoad() {
+        this.loadKnowledgeHome();
         this.loadPosts(true);
     },
     onShow() {
         this.loadUnreadCount();
     },
     onPullDownRefresh() {
-        this.loadPosts(true).finally(() => wx.stopPullDownRefresh());
+        const task = this.data.activeSection === "knowledge" ? this.loadKnowledgeHome() : this.loadPosts(true);
+        task.finally(() => wx.stopPullDownRefresh());
     },
     onReachBottom() {
-        if (this.data.hasMore && !this.data.loading) {
+        if (this.data.activeSection === "community" && this.data.hasMore && !this.data.loading) {
             this.loadPosts(false);
         }
+    },
+    selectHomeSection(event) {
+        const activeSection = String(event.currentTarget.dataset.section || "knowledge");
+        this.setData({ activeSection });
+        if (activeSection === "knowledge" && this.data.knowledgeCategories.length === 0) {
+            this.loadKnowledgeHome();
+        }
+        else if (activeSection === "community" && this.data.items.length === 0) {
+            this.loadPosts(true);
+        }
+    },
+    onKnowledgeSearchInput(event) {
+        this.setData({ knowledgeQ: String(event.detail.value || "") });
+    },
+    onKnowledgeSearchConfirm() {
+        const q = this.data.knowledgeQ.trim();
+        if (q) {
+            wx.navigateTo({ url: `/pages/knowledge/knowledge?q=${encodeURIComponent(q)}` });
+        }
+        else {
+            this.openKnowledgeRoot();
+        }
+    },
+    openKnowledgeRoot() {
+        wx.navigateTo({ url: "/pages/knowledge/knowledge" });
+    },
+    openKnowledgeCategory(event) {
+        const id = Number(event.currentTarget.dataset.id);
+        wx.navigateTo({ url: `/pages/knowledge/knowledge?categoryId=${id}` });
+    },
+    openKnowledgeArticle(event) {
+        const id = Number(event.currentTarget.dataset.id);
+        wx.navigateTo({ url: `/pages/knowledge-detail/knowledge-detail?id=${id}` });
     },
     onSearchInput(event) {
         this.setData({ q: String(event.detail.value || "") });
@@ -37,14 +96,14 @@ Page({
         this.loadPosts(true);
     },
     onHeaderSearch() {
+        if (this.data.activeSection === "knowledge") {
+            this.onKnowledgeSearchConfirm();
+            return;
+        }
         this.loadPosts(true);
     },
     showNotifications() {
         wx.switchTab({ url: "/pages/messages/messages" });
-    },
-    selectFeedTab(event) {
-        const feedTab = String(event.currentTarget.dataset.tab || "recommend");
-        this.setData({ feedTab });
     },
     selectType(event) {
         const type = Number(event.currentTarget.dataset.type || 0);
@@ -100,6 +159,28 @@ Page({
                 }
             }
         });
+    },
+    async loadKnowledgeHome() {
+        if (this.data.knowledgeLoading) {
+            return;
+        }
+        this.setData({ knowledgeLoading: true });
+        try {
+            const [categories, articleResult] = await Promise.all([
+                (0, index_1.listKnowledgeCategories)(),
+                (0, index_1.listKnowledgeArticles)({ page: 1, pageSize: 3 })
+            ]);
+            this.setData({
+                knowledgeCategories: categories.map(mapKnowledgeCategory),
+                knowledgeArticles: articleResult.items
+            });
+        }
+        catch (error) {
+            (0, request_1.toastError)(error);
+        }
+        finally {
+            this.setData({ knowledgeLoading: false });
+        }
     },
     async loadPosts(reset) {
         if (this.data.loading) {
