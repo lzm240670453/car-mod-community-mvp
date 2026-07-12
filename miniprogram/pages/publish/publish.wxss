@@ -1,0 +1,153 @@
+.publish-page {
+  padding-top: 24rpx;
+}
+
+.publish-top {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 110rpx 1fr 110rpx;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.cancel-text {
+  min-height: 60rpx;
+  line-height: 60rpx;
+  color: #333333;
+  font-size: 28rpx;
+}
+
+.publish-title {
+  color: #1a1a1a;
+  font-size: 40rpx;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.publish-subtitle {
+  margin-top: 6rpx;
+  color: #8b6f47;
+  font-size: 22rpx;
+  text-align: center;
+}
+
+.top-submit {
+  min-height: 60rpx;
+  border-radius: 12rpx;
+  background: #8b6f47;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.type-card {
+  min-height: 180rpx;
+  padding: 18rpx 10rpx;
+  border: 1rpx solid #dedbd5;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.94);
+  text-align: center;
+  box-shadow: 0 10rpx 24rpx rgba(26, 26, 26, 0.04);
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.type-card.active {
+  border-color: #8b6f47;
+  background: linear-gradient(180deg, #ffffff, #f2ece3);
+}
+
+.type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70rpx;
+  height: 62rpx;
+  margin: 0 auto 14rpx;
+  background: #2b2b2b;
+}
+
+.type-card.active .type-icon {
+  background: #8b6f47;
+  color: #ffffff;
+}
+
+.type-title {
+  color: #1a1a1a;
+  font-size: 27rpx;
+  font-weight: 800;
+}
+
+.type-desc {
+  margin-top: 6rpx;
+  color: #777777;
+  font-size: 22rpx;
+}
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12rpx;
+}
+
+.upload-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  height: 110rpx;
+  border: 2rpx dashed #d8d3cb;
+  border-radius: 14rpx;
+  background: #fafafa;
+  color: #999999;
+  font-size: 22rpx;
+  transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+
+.upload-cell.primary {
+  border-style: solid;
+  background: linear-gradient(180deg, #ffffff, #f3f0eb);
+  color: #333333;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.image-url-field {
+  margin-top: 22rpx;
+  margin-bottom: 0;
+}
+
+.compact-textarea {
+  min-height: 140rpx;
+}
+
+.form-panel {
+  margin-top: 24rpx;
+}
+
+.title-input {
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.two-col .field {
+  min-width: 0;
+}
+
+.publish-button {
+  margin-top: 26rpx;
+}

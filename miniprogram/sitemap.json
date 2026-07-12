@@ -1,0 +1,9 @@
+{
+  "desc": "All pages are available for the MVP.",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

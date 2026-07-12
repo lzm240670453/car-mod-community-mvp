@@ -1,0 +1,68 @@
+<view class="page detail-page">
+  <view wx:if="{{detail}}" class="section panel detail-hero">
+    <view class="post-head">
+      <view class="row author">
+        <view class="avatar"></view>
+        <view class="stack">
+          <view class="author-name">车友 {{detail.userId}}</view>
+          <view class="garage-tag">{{detail.createdAtText}}</view>
+        </view>
+      </view>
+      <view class="post-type-badge">{{detail.typeText}}</view>
+    </view>
+    <view class="title detail-title">{{detail.title}}</view>
+    <view class="detail-meta">
+      <text>{{detail.statusText}}</text>
+      <text>{{detail.likeCount}} 赞</text>
+      <text>{{detail.favoriteCount}} 收藏</text>
+    </view>
+    <view class="content">{{detail.content}}</view>
+    <view wx:if="{{detail.images.length > 0}}" class="image-grid">
+      <image wx:for="{{detail.images}}" wx:key="id" src="{{item.imageUrl}}" mode="aspectFill" />
+    </view>
+    <view wx:else class="detail-cover image-placeholder"></view>
+    <view class="action-row">
+      <button class="button secondary" hover-class="button-hover" bindtap="like">
+        <image class="hi-icon small" src="/assets/icons/thumbsUp-brown.svg" mode="aspectFit" />
+        <text>点赞</text>
+      </button>
+      <button class="button secondary" hover-class="button-hover" bindtap="favorite">
+        <image class="hi-icon small" src="/assets/icons/star-brown.svg" mode="aspectFit" />
+        <text>收藏</text>
+      </button>
+    </view>
+  </view>
+
+  <view class="section panel">
+    <view class="between">
+      <view class="sub-title">评论</view>
+      <view class="caption">{{comments.length}} 条</view>
+    </view>
+    <view wx:for="{{comments}}" wx:key="id" class="comment-item">
+      <view class="avatar mini-avatar"></view>
+      <view class="comment-main">
+        <view class="comment-author">用户 {{item.userId}}</view>
+        <view class="comment-content">{{item.content}}</view>
+        <view class="caption">{{item.createdAtText}}</view>
+      </view>
+    </view>
+    <view wx:if="{{comments.length === 0}}" class="empty small-empty">暂无评论</view>
+    <textarea class="textarea comment-input" value="{{commentContent}}" bindinput="onCommentInput" placeholder="写下你的建议或经验" />
+    <button class="button" disabled="{{!commentContent}}" hover-class="button-hover" bindtap="submitComment">
+      <image class="hi-icon small white" src="/assets/icons/comment-white.svg" mode="aspectFit" />
+      <text>发表评论</text>
+    </button>
+  </view>
+
+  <view class="section panel report-panel">
+    <view class="sub-title">举报</view>
+    <view class="caption">如内容存在违规、诈骗或侵权，请提交原因。</view>
+    <input class="input report-input" value="{{reportText}}" bindinput="onReportInput" placeholder="请输入举报原因" />
+    <button class="button danger" disabled="{{!reportText}}" hover-class="button-hover" bindtap="report">
+      <image class="hi-icon small white" src="/assets/icons/report-white.svg" mode="aspectFit" />
+      <text>提交举报</text>
+    </button>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty">加载中...</view>
+</view>

@@ -1,0 +1,81 @@
+<view class="page part-detail-page">
+  <view wx:if="{{detail}}" class="section panel part-hero">
+    <view class="between">
+      <view class="hex-badge {{detail.type === 2 ? 'buy' : ''}}">{{detail.typeText}}</view>
+      <view class="price">{{detail.priceText}}</view>
+    </view>
+    <view class="title detail-title">{{detail.title}}</view>
+    <view class="detail-meta">
+      <text>{{detail.createdAtText}}</text>
+      <text>用户 {{detail.userId}}</text>
+      <text>{{detail.statusText}}</text>
+    </view>
+    <view wx:if="{{detail.images.length > 0}}" class="image-grid">
+      <image wx:for="{{detail.images}}" wx:key="id" src="{{item.imageUrl}}" mode="aspectFill" />
+    </view>
+    <view wx:else class="part-cover image-placeholder"></view>
+    <view class="spec-grid">
+      <view class="spec-item">
+        <image class="hi-icon small" src="/assets/icons/wrench-brown.svg" mode="aspectFit" />
+        <text class="caption">品牌型号</text>
+        <text>{{detail.brand}} {{detail.model}}</text>
+      </view>
+      <view class="spec-item">
+        <image class="hi-icon small" src="/assets/icons/shield-brown.svg" mode="aspectFit" />
+        <text class="caption">成色</text>
+        <text>{{detail.conditionText}}</text>
+      </view>
+      <view class="spec-item">
+        <image class="hi-icon small" src="/assets/icons/location-brown.svg" mode="aspectFit" />
+        <text class="caption">城市</text>
+        <text>{{detail.cityName || '不限城市'}}</text>
+      </view>
+      <view class="spec-item">
+        <image class="hi-icon small" src="/assets/icons/message-brown.svg" mode="aspectFit" />
+        <text class="caption">意向</text>
+        <text>{{detail.intentCount}}</text>
+      </view>
+    </view>
+    <view class="content">{{detail.description}}</view>
+    <view class="notice">平台仅提供信息撮合，不参与支付、担保、物流和售后。请优先同城验货，确认适配和成色后再交易。</view>
+    <button class="button secondary favorite-button" hover-class="button-hover" bindtap="favorite">
+      <image class="hi-icon small" src="/assets/icons/star-brown.svg" mode="aspectFit" />
+      <text>收藏配件</text>
+    </button>
+  </view>
+
+  <view wx:if="{{detail}}" class="section panel">
+    <view class="sub-title">适配车型</view>
+    <view wx:for="{{detail.fitments}}" wx:key="id" class="mini-item">
+      <view class="hex-dot">
+        <image class="hi-icon mini white" src="/assets/icons/car-white.svg" mode="aspectFit" />
+      </view>
+      <view>
+        <view>车型 ID：{{item.vehicleModelId}}</view>
+        <view class="caption">{{item.note || '未填写备注'}}</view>
+      </view>
+    </view>
+    <view wx:if="{{detail.fitments.length === 0}}" class="empty small-empty">卖家未填写适配车型</view>
+  </view>
+
+  <view class="section panel">
+    <view class="sub-title">我想要</view>
+    <view class="caption">发送意向后，可在「我的」里管理交易沟通状态。</view>
+    <textarea class="textarea intent-input" value="{{intentMessage}}" bindinput="onIntentInput" placeholder="给对方留言，例如：我想要这套避震，准备按帖子里的联系方式沟通。" />
+    <button class="button" disabled="{{!intentMessage}}" hover-class="button-hover" bindtap="submitIntent">
+      <image class="hi-icon small white" src="/assets/icons/message-white.svg" mode="aspectFit" />
+      <text>发起交易意向</text>
+    </button>
+  </view>
+
+  <view class="section panel report-panel">
+    <view class="sub-title">举报</view>
+    <input class="input report-input" value="{{reportText}}" bindinput="onReportInput" placeholder="请输入举报原因" />
+    <button class="button danger" disabled="{{!reportText}}" hover-class="button-hover" bindtap="report">
+      <image class="hi-icon small white" src="/assets/icons/report-white.svg" mode="aspectFit" />
+      <text>提交举报</text>
+    </button>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty">加载中...</view>
+</view>

@@ -1,0 +1,70 @@
+<view class="page parts-page">
+  <view class="home-header">
+    <view class="brand-lockup">
+      <image class="header-logo" src="/assets/logo/header-logo.png" mode="aspectFit" />
+    </view>
+    <view class="header-actions">
+      <view class="icon-button pressable" hover-class="pressable-hover" bindtap="onHeaderSearch">
+        <image class="hi-icon" src="/assets/icons/search-black.svg" mode="aspectFit" />
+      </view>
+      <view class="icon-button pressable" hover-class="pressable-hover" bindtap="showFilters">
+        <image class="hi-icon" src="/assets/icons/filter-black.svg" mode="aspectFit" />
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="market-tabs">
+      <view class="market-tab pressable {{type === 0 ? 'active' : ''}}" data-type="0" hover-class="pressable-hover" bindtap="selectType">全部</view>
+      <view class="market-tab pressable {{type === 1 ? 'active' : ''}}" data-type="1" hover-class="pressable-hover" bindtap="selectType">出售</view>
+      <view class="market-tab pressable {{type === 2 ? 'active' : ''}}" data-type="2" hover-class="pressable-hover" bindtap="selectType">求购</view>
+    </view>
+    <view class="search-box parts-search" hover-class="input-hover">
+      <image class="hi-icon small" src="/assets/icons/search-gray.svg" mode="aspectFit" bindtap="onHeaderSearch" />
+      <input class="search-input" value="{{q}}" placeholder="搜索配件、品牌或型号" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearchConfirm" />
+    </view>
+    <scroll-view scroll-x class="category-scroll">
+      <view class="category-row">
+        <view wx:for="{{categories}}" wx:key="id" class="chip pressable {{categoryId === item.id ? 'active' : ''}}" data-id="{{item.id}}" hover-class="chip-hover" bindtap="selectCategory">
+          {{item.name}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="result-bar">
+    <text>找到 {{total}} 个配件</text>
+    <view class="sort-trigger pressable" hover-class="pressable-hover" bindtap="changeSort">
+      <text>默认排序</text>
+      <image class="hi-icon mini" src="/assets/icons/chevronRight-gray.svg" mode="aspectFit" />
+    </view>
+  </view>
+
+  <view class="parts-grid">
+    <view wx:for="{{items}}" wx:key="id" class="part-card pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openPart">
+      <view class="part-cover image-placeholder">
+        <view class="part-badge {{item.type === 2 ? 'buy' : 'sell'}}">{{item.typeText}}</view>
+      </view>
+      <view class="part-body">
+        <view class="part-title">{{item.title}}</view>
+        <view class="between price-row">
+          <text class="price">{{item.priceText}}</text>
+          <text class="condition">{{item.conditionText}}</text>
+        </view>
+        <view class="part-meta icon-label">
+          <image class="hi-icon mini" src="/assets/icons/location-gray.svg" mode="aspectFit" />
+          <text>{{item.cityName || '不限城市'}}</text>
+        </view>
+        <view class="fitment">适配：{{item.brand}} {{item.model}}</view>
+        <view class="seller-row">
+          <view class="avatar mini-avatar"></view>
+          <text>车友 {{item.userId}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && items.length === 0}}" class="empty">暂无二手件，试试调整分类或搜索词</view>
+  <view wx:if="{{loading}}" class="empty">加载中...</view>
+  <view wx:if="{{!hasMore && items.length > 0}}" class="empty">没有更多了</view>
+</view>

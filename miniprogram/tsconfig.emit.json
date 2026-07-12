@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "./",
+    "outDir": "./.tsbuild",
+    "declaration": false,
+    "sourceMap": false,
+    "removeComments": true
+  },
+  "exclude": ["node_modules", ".tsbuild"]
+}

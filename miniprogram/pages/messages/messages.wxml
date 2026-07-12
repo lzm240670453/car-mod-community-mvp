@@ -1,0 +1,56 @@
+<view class="page messages-page">
+  <view class="messages-header">
+    <view>
+      <view class="messages-title">消息</view>
+      <view class="messages-subtitle">{{unreadCount ? unreadCount + ' 条未读' : '站内信与交易提醒'}}</view>
+    </view>
+    <button wx:if="{{userId && unreadCount > 0}}" class="icon-button outline pressable" hover-class="pressable-hover" bindtap="markAllRead">
+      <image class="hi-icon small" src="/assets/icons/eye-brown.svg" mode="aspectFit" />
+    </button>
+  </view>
+
+  <view wx:if="{{!userId}}" class="panel login-empty">
+    <image class="empty-icon" src="/assets/icons/message-brown.svg" mode="aspectFit" />
+    <view class="sub-title">登录后查看站内信</view>
+    <view class="caption">交易意向、评论互动和系统提醒都会在这里汇总。</view>
+    <button class="button login-button" hover-class="button-hover" bindtap="goLogin">
+      <image class="hi-icon small white" src="/assets/icons/user-white.svg" mode="aspectFit" />
+      <text>去登录</text>
+    </button>
+  </view>
+
+  <block wx:if="{{userId}}">
+    <scroll-view scroll-x class="message-tab-scroll">
+      <view class="message-tabs">
+        <view wx:for="{{tabs}}" wx:key="value" class="message-tab pressable {{activeTab === item.value ? 'active' : ''}}" data-tab="{{item.value}}" hover-class="pressable-hover" bindtap="selectTab">
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="message-list">
+      <view wx:for="{{items}}" wx:key="id" class="message-card pressable {{item.unread ? 'unread' : ''}}" data-id="{{item.id}}" hover-class="card-hover" bindtap="openMessage">
+        <view class="message-icon-wrap">
+          <image class="hi-icon small" src="{{item.type === 2 ? '/assets/icons/message-brown.svg' : item.type === 3 ? '/assets/icons/comment-brown.svg' : '/assets/icons/notification-brown.svg'}}" mode="aspectFit" />
+          <view wx:if="{{item.unread}}" class="unread-dot"></view>
+        </view>
+        <view class="message-main">
+          <view class="message-top">
+            <view class="message-title">{{item.title}}</view>
+            <view class="message-time">{{item.createdAtText}}</view>
+          </view>
+          <view class="message-content">{{item.content || '暂无内容'}}</view>
+          <view class="message-meta">
+            <text class="message-chip">{{item.typeText}}</text>
+            <text wx:if="{{item.targetText}}">{{item.targetText}} #{{item.targetId}}</text>
+          </view>
+        </view>
+        <image wx:if="{{item.targetType === 1 || item.targetType === 3}}" class="hi-icon mini" src="/assets/icons/chevronRight-gray.svg" mode="aspectFit" />
+      </view>
+    </view>
+
+    <view wx:if="{{!loading && items.length === 0}}" class="empty">暂无消息</view>
+    <view wx:if="{{loading}}" class="empty">加载中...</view>
+    <view wx:if="{{!hasMore && items.length > 0}}" class="empty">没有更多了</view>
+  </block>
+</view>

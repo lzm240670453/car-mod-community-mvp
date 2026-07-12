@@ -1,0 +1,14 @@
+{
+  "name": "retrofit-miniprogram",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Retrofit car modification community WeChat Mini Program.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "emit:js": "tsc --project tsconfig.emit.json && powershell -NoProfile -ExecutionPolicy Bypass -Command \"Get-ChildItem -Path .\\.tsbuild -Recurse -Filter *.js | ForEach-Object { $relative = $_.FullName.Substring((Resolve-Path .\\.tsbuild).Path.Length + 1); $target = Join-Path (Get-Location) $relative; $targetDir = Split-Path -Parent $target; New-Item -ItemType Directory -Force $targetDir | Out-Null; Copy-Item -LiteralPath $_.FullName -Destination $target -Force }\""
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^4.0.8",
+    "typescript": "^5.5.4"
+  }
+}

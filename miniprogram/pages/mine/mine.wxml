@@ -1,0 +1,187 @@
+<view class="page mine-page">
+  <view class="profile-hero">
+    <view class="hero-actions">
+      <view class="hero-hex pressable" hover-class="pressable-hover" bindtap="showThemeTip">
+        <image class="hi-icon small white" src="/assets/icons/shirt-white.svg" mode="aspectFit" />
+      </view>
+      <view class="hero-hex pressable" hover-class="pressable-hover" bindtap="showSettings">
+        <image class="hi-icon small white" src="/assets/icons/setting-white.svg" mode="aspectFit" />
+      </view>
+    </view>
+    <view class="profile-main">
+      <view class="profile-avatar">
+        <image class="profile-mascot" src="/assets/logo/mascot.png" mode="aspectFit" />
+      </view>
+      <view class="profile-info">
+        <view class="profile-name">{{nickname || 'SpeedHunter'}}</view>
+        <view class="profile-level">撸车玩家 Lv.6</view>
+        <view class="profile-bio">热爱改装，记录每一次进化</view>
+      </view>
+    </view>
+    <view class="stats-row">
+      <view class="stat-hex">
+        <image class="hi-icon small white" src="/assets/icons/edit-white.svg" mode="aspectFit" />
+        <view class="stat-value">{{myPosts.length}}</view>
+        <view class="stat-label">帖子</view>
+      </view>
+      <view class="stat-hex">
+        <image class="hi-icon small white" src="/assets/icons/car-white.svg" mode="aspectFit" />
+        <view class="stat-value">{{garages.length}}</view>
+        <view class="stat-label">车库</view>
+      </view>
+      <view class="stat-hex">
+        <image class="hi-icon small white" src="/assets/icons/message-white.svg" mode="aspectFit" />
+        <view class="stat-value">{{intents.length}}</view>
+        <view class="stat-label">意向</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section panel login-panel">
+    <view class="between">
+      <view>
+        <view class="sub-title">账号</view>
+        <view class="caption">当前用户 ID：{{userId || '未登录'}}</view>
+      </view>
+      <button class="button secondary small" hover-class="button-hover" bindtap="loadAll" wx:if="{{userId}}">
+        <image class="hi-icon mini" src="/assets/icons/setting-brown.svg" mode="aspectFit" />
+        <text>刷新</text>
+      </button>
+    </view>
+    <view class="field">
+      <text class="field-label">开发 OpenID</text>
+      <input class="input" value="{{loginOpenid}}" bindinput="onLoginOpenidInput" placeholder="dev-user" />
+    </view>
+    <button class="button" hover-class="button-hover" bindtap="devLogin">
+      <image class="hi-icon small white" src="/assets/icons/user-white.svg" mode="aspectFit" />
+      <text>开发登录</text>
+    </button>
+  </view>
+
+  <view wx:if="{{userId}}" class="section panel">
+    <view class="section-title">资料</view>
+    <view class="field">
+      <text class="field-label">昵称</text>
+      <input class="input" value="{{nickname}}" bindinput="onNicknameInput" />
+    </view>
+    <view class="field">
+      <text class="field-label">头像 URL</text>
+      <input class="input" value="{{avatarUrl}}" bindinput="onAvatarInput" />
+    </view>
+    <button class="button secondary" hover-class="button-hover" bindtap="saveProfile">
+      <image class="hi-icon small" src="/assets/icons/edit-brown.svg" mode="aspectFit" />
+      <text>保存资料</text>
+    </button>
+    <view class="field phone-field">
+      <text class="field-label">手机号</text>
+      <input class="input" value="{{phone}}" bindinput="onPhoneInput" placeholder="用于绑定手机号" />
+    </view>
+    <button class="button secondary" disabled="{{!phone}}" hover-class="button-hover" bindtap="savePhone">
+      <image class="hi-icon small" src="/assets/icons/phone-brown.svg" mode="aspectFit" />
+      <text>绑定手机号</text>
+    </button>
+  </view>
+
+  <view wx:if="{{userId}}" class="section panel">
+    <view class="section-title">我的车库</view>
+    <view wx:for="{{garages}}" wx:key="id" class="garage-item">
+      <view class="garage-icon hex">
+        <image class="hi-icon small white" src="/assets/icons/car-white.svg" mode="aspectFit" />
+      </view>
+      <view class="garage-main">
+        <view class="between">
+          <view class="garage-title">车型 ID：{{item.vehicleModelId}}</view>
+          <view class="chip {{item.isPrimary ? 'active' : ''}}">{{item.isPrimary ? '主车' : '车辆'}}</view>
+        </view>
+        <view class="caption">{{item.nickname}} {{item.year || ''}}</view>
+        <view class="caption">{{item.description}}</view>
+      </view>
+    </view>
+
+    <view class="divider"></view>
+    <view class="field">
+      <text class="field-label">搜索车型</text>
+      <input class="input" value="{{vehicleKeyword}}" bindinput="onVehicleKeywordInput" placeholder="例如 飞度 GK5" confirm-type="search" bindconfirm="searchVehicle" />
+    </view>
+    <button class="button secondary" disabled="{{!vehicleKeyword}}" hover-class="button-hover" bindtap="searchVehicle">
+      <image class="hi-icon small" src="/assets/icons/search-brown.svg" mode="aspectFit" />
+      <text>搜索车型</text>
+    </button>
+    <view wx:for="{{vehicleResults}}" wx:key="id" class="vehicle-result pressable {{selectedVehicle && selectedVehicle.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" hover-class="card-hover" bindtap="selectVehicle">
+      <view class="vehicle-title">{{item.brandName}} {{item.seriesName}} {{item.name}}</view>
+      <view class="caption">ID {{item.id}} {{item.year || ''}} {{item.generation}} {{item.engine}}</view>
+    </view>
+    <view wx:if="{{selectedVehicle}}" class="field selected-field">
+      <text class="field-label">已选车型</text>
+      <view class="picker-like">{{selectedVehicle.brandName}} {{selectedVehicle.seriesName}} {{selectedVehicle.name}}</view>
+    </view>
+    <view class="two-col">
+      <view class="field">
+        <text class="field-label">年款</text>
+        <input class="input" type="number" value="{{garageYear}}" bindinput="onGarageYearInput" />
+      </view>
+      <view class="field">
+        <text class="field-label">车辆昵称</text>
+        <input class="input" value="{{garageNickname}}" bindinput="onGarageNicknameInput" />
+      </view>
+    </view>
+    <view class="field">
+      <text class="field-label">说明</text>
+      <input class="input" value="{{garageDescription}}" bindinput="onGarageDescriptionInput" />
+    </view>
+    <button class="button" disabled="{{!selectedVehicle}}" hover-class="button-hover" bindtap="addGarage">
+      <image class="hi-icon small white" src="/assets/icons/add-white.svg" mode="aspectFit" />
+      <text>添加车辆</text>
+    </button>
+  </view>
+
+  <view wx:if="{{userId}}" class="section panel">
+    <view class="section-title">我的帖子</view>
+    <view wx:for="{{myPosts}}" wx:key="id" class="mini-item pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openMyPost">
+      <view class="mini-cover image-placeholder"></view>
+      <view class="mini-main">
+        <view class="mini-title">{{item.title}}</view>
+        <view class="caption">{{item.typeText}} · {{item.statusText}} · {{item.createdAtText}}</view>
+      </view>
+      <image class="hi-icon small" src="/assets/icons/chevronRight-gray.svg" mode="aspectFit" />
+    </view>
+    <view wx:if="{{myPosts.length === 0}}" class="empty small-empty">暂无帖子</view>
+  </view>
+
+  <view wx:if="{{userId}}" class="section panel">
+    <view class="section-title">我的二手件</view>
+    <view wx:for="{{myParts}}" wx:key="id" class="mini-item pressable" data-id="{{item.id}}" hover-class="card-hover" bindtap="openMyPart">
+      <view class="mini-cover image-placeholder"></view>
+      <view class="mini-main">
+        <view class="mini-title">{{item.title}}</view>
+        <view class="caption">{{item.typeText}} · {{item.statusText}} · {{item.createdAtText}}</view>
+      </view>
+      <image class="hi-icon small" src="/assets/icons/chevronRight-gray.svg" mode="aspectFit" />
+    </view>
+    <view wx:if="{{myParts.length === 0}}" class="empty small-empty">暂无二手件</view>
+  </view>
+
+  <view wx:if="{{userId}}" class="section panel">
+    <view class="section-title">我的意向</view>
+    <view wx:for="{{intents}}" wx:key="id" class="intent-item">
+      <view>
+        <view class="mini-title">意向 #{{item.id}} · 配件 #{{item.partId}}</view>
+        <view class="caption">{{item.message || '无留言'}} · 状态 {{item.status}}</view>
+      </view>
+      <button wx:if="{{item.status === 1}}" class="button secondary small" data-id="{{item.id}}" hover-class="button-hover" bindtap="closeIntent">
+        <image class="hi-icon mini" src="/assets/icons/close-brown.svg" mode="aspectFit" />
+        <text>关闭</text>
+      </button>
+    </view>
+    <view wx:if="{{intents.length === 0}}" class="empty small-empty">暂无意向</view>
+  </view>
+
+  <view wx:if="{{userId}}" class="section panel">
+    <view class="section-title">举报记录</view>
+    <view wx:for="{{reports}}" wx:key="id" class="report-item">
+      <view>举报 #{{item.id}} · 目标 {{item.targetType}}/{{item.targetId}}</view>
+      <view class="caption">{{item.reasonText}} · {{item.statusText}}</view>
+    </view>
+    <view wx:if="{{reports.length === 0}}" class="empty small-empty">暂无举报</view>
+  </view>
+</view>

@@ -1,0 +1,141 @@
+<view class="page publish-page">
+  <view class="publish-top">
+    <view class="cancel-text pressable" hover-class="pressable-hover" bindtap="cancelPublish">取消</view>
+    <view>
+      <view class="publish-title">发布内容</view>
+      <view class="publish-subtitle">{{mode === 'post' ? '分享改装心得' : mode === 'sell' ? '发布出售配件' : '发布求购需求'}}</view>
+    </view>
+    <button class="top-submit" loading="{{submitting}}" disabled="{{submitting}}" hover-class="button-hover" bindtap="submit">发布</button>
+  </view>
+
+  <view class="section type-grid">
+    <view class="type-card pressable {{mode === 'post' ? 'active' : ''}}" data-mode="post" hover-class="card-hover" bindtap="selectMode">
+      <view class="type-icon hex">
+        <image class="hi-icon white" src="/assets/icons/edit-white.svg" mode="aspectFit" />
+      </view>
+      <view class="type-title">改装内容</view>
+      <view class="type-desc">案例、心得、求助</view>
+    </view>
+    <view class="type-card pressable {{mode === 'sell' ? 'active' : ''}}" data-mode="sell" hover-class="card-hover" bindtap="selectMode">
+      <view class="type-icon hex">
+        <image class="hi-icon white" src="/assets/icons/market-white.svg" mode="aspectFit" />
+      </view>
+      <view class="type-title">出售改装件</view>
+      <view class="type-desc">发布闲置配件</view>
+    </view>
+    <view class="type-card pressable {{mode === 'buy' ? 'active' : ''}}" data-mode="buy" hover-class="card-hover" bindtap="selectMode">
+      <view class="type-icon hex">
+        <image class="hi-icon white" src="/assets/icons/search-white.svg" mode="aspectFit" />
+      </view>
+      <view class="type-title">求购改装件</view>
+      <view class="type-desc">寻找目标配件</view>
+    </view>
+  </view>
+
+  <view class="section panel">
+    <view class="section-title">添加图片 <text class="field-hint">URL 每行一个</text></view>
+    <view class="upload-grid">
+      <view class="upload-cell primary pressable" hover-class="pressable-hover" bindtap="showImageTip">
+        <image class="hi-icon" src="/assets/icons/camera-black.svg" mode="aspectFit" />
+        <text>选择图片</text>
+      </view>
+      <view class="upload-cell pressable" hover-class="pressable-hover" bindtap="showImageTip">
+        <image class="hi-icon small" src="/assets/icons/add-gray.svg" mode="aspectFit" />
+      </view>
+      <view class="upload-cell pressable" hover-class="pressable-hover" bindtap="showImageTip">
+        <image class="hi-icon small" src="/assets/icons/add-gray.svg" mode="aspectFit" />
+      </view>
+      <view class="upload-cell pressable" hover-class="pressable-hover" bindtap="showImageTip">
+        <image class="hi-icon small" src="/assets/icons/add-gray.svg" mode="aspectFit" />
+      </view>
+      <view class="upload-cell pressable" hover-class="pressable-hover" bindtap="showImageTip">
+        <image class="hi-icon small" src="/assets/icons/add-gray.svg" mode="aspectFit" />
+      </view>
+    </view>
+    <view class="field image-url-field">
+      <text class="field-label">图片 URL</text>
+      <textarea wx:if="{{mode === 'post'}}" class="textarea compact-textarea" value="{{postForm.imagesText}}" data-field="imagesText" bindinput="updatePostField" placeholder="https://example.com/image.jpg" />
+      <textarea wx:else class="textarea compact-textarea" value="{{partForm.imagesText}}" data-field="imagesText" bindinput="updatePartField" placeholder="https://example.com/image.jpg" />
+    </view>
+  </view>
+
+  <view wx:if="{{mode === 'post'}}" class="panel form-panel">
+    <view class="field">
+      <text class="field-label">帖子类型</text>
+      <picker range="{{postTypes}}" range-key="label" value="{{postTypeIndex}}" bindchange="onPostTypeChange">
+        <view class="picker-like">{{postTypes[postTypeIndex].label}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="field-label">标题 <text class="field-hint">0/60</text></text>
+      <input class="input title-input" value="{{postForm.title}}" data-field="title" bindinput="updatePostField" placeholder="添加标题" />
+    </view>
+    <view class="field">
+      <text class="field-label">内容 <text class="field-hint">0/2000</text></text>
+      <textarea class="textarea" value="{{postForm.content}}" data-field="content" bindinput="updatePostField" placeholder="分享你的改装过程、预算、安装体验和避坑心得" />
+    </view>
+    <view class="field">
+      <text class="field-label">车型 ID <text class="field-hint">可选</text></text>
+      <input class="input" type="number" value="{{postForm.vehicleModelId}}" data-field="vehicleModelId" bindinput="updatePostField" placeholder="可在我的页面搜索车型获取" />
+    </view>
+  </view>
+
+  <view wx:else class="panel form-panel">
+    <view class="field">
+      <text class="field-label">配件分类</text>
+      <picker range="{{categories}}" range-key="name" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="picker-like">{{categories[categoryIndex] ? categories[categoryIndex].name : '请选择分类'}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="field-label">标题</text>
+      <input class="input title-input" value="{{partForm.title}}" data-field="title" bindinput="updatePartField" placeholder="例如：BC Racing BR 避震" />
+    </view>
+    <view class="two-col">
+      <view class="field">
+        <text class="field-label">品牌</text>
+        <input class="input" value="{{partForm.brand}}" data-field="brand" bindinput="updatePartField" placeholder="品牌" />
+      </view>
+      <view class="field">
+        <text class="field-label">型号</text>
+        <input class="input" value="{{partForm.model}}" data-field="model" bindinput="updatePartField" placeholder="型号" />
+      </view>
+    </view>
+    <view class="two-col">
+      <view class="field">
+        <text class="field-label">成色</text>
+        <picker range="{{conditionOptions}}" range-key="label" value="{{conditionIndex}}" bindchange="onConditionChange">
+          <view class="picker-like">{{conditionOptions[conditionIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="field-label">价格</text>
+        <input class="input" type="digit" value="{{partForm.price}}" data-field="price" bindinput="updatePartField" placeholder="面议" />
+      </view>
+    </view>
+    <view class="two-col">
+      <view class="field">
+        <text class="field-label">城市编码</text>
+        <input class="input" value="{{partForm.cityCode}}" data-field="cityCode" bindinput="updatePartField" placeholder="310000" />
+      </view>
+      <view class="field">
+        <text class="field-label">城市名称</text>
+        <input class="input" value="{{partForm.cityName}}" data-field="cityName" bindinput="updatePartField" placeholder="上海" />
+      </view>
+    </view>
+    <view class="field">
+      <text class="field-label">描述</text>
+      <textarea class="textarea" value="{{partForm.description}}" data-field="description" bindinput="updatePartField" placeholder="写清楚使用时间、成色、适配、瑕疵和联系方式" />
+    </view>
+    <view class="field">
+      <text class="field-label">适配车型 ID <text class="field-hint">可选</text></text>
+      <input class="input" type="number" value="{{partForm.vehicleModelId}}" data-field="vehicleModelId" bindinput="updatePartField" placeholder="可在我的页面搜索车型获取" />
+    </view>
+    <view class="field">
+      <text class="field-label">适配备注</text>
+      <input class="input" value="{{partForm.fitmentNote}}" data-field="fitmentNote" bindinput="updatePartField" placeholder="例如 GK5 适配" />
+    </view>
+  </view>
+
+  <button class="button publish-button" loading="{{submitting}}" disabled="{{submitting}}" hover-class="button-hover" bindtap="submit">发布</button>
+</view>
